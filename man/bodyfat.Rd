@@ -31,36 +31,36 @@ The body fat percentage of individuals assisted in a public hospital in Curitiba
 \examples{
 data(bodyfat, package = "vasicekreg")
 
+bodyfat$BMI <- bodyfat$BMI / 100
+bodyfat$SEX <- as.factor(bodyfat$SEX)
+bodyfat$IPAQ<- as.factor(bodyfat$IPAQ)
+
 library(gamlss)
 
 # mean fit 
-fitmean.logit <- gamlss(ARMS ~ AGE + I(BMI / 100) + as.factor(SEX) + as.factor(IPAQ), 
+fitmean.logit <- gamlss(ARMS ~ AGE + BMI + SEX + IPAQ, 
 data = bodyfat, family = VASIM(mu.link = "logit", sigma.link = "logit"))
 
-fitmean.probit <- gamlss(ARMS ~ AGE + I(BMI / 100) + as.factor(SEX) + as.factor(IPAQ), 
+fitmean.probit <- gamlss(ARMS ~ AGE + BMI + SEX + IPAQ, 
 data = bodyfat, family = VASIM(mu.link = "probit", sigma.link = "logit"))
 
-# quantile fit - nu = 0.5
-fitquant.logit <- gamlss(ARMS ~ AGE + I(BMI / 100) + as.factor(SEX) + as.factor(IPAQ), 
-data = bodyfat, family = VASIQ(mu.link = "logit", sigma.link = "logit"), nu.start = 0.5)
+# quantile fit - tau = 0.5
 
-fitquant.probit <- gamlss(ARMS ~ AGE + I(BMI / 100) + as.factor(SEX) + as.factor(IPAQ), 
-data = bodyfat, family = VASIQ(mu.link = "probit", sigma.link = "logit"), nu.start = 0.5)
+tau <- 0.50
+fitquant.logit <- gamlss(ARMS ~ AGE + BMI + SEX + IPAQ, data = bodyfat,
+family = VASIQ(mu.link = "logit", sigma.link = "logit"))
 
-bodyfat$BMI <- bodyfat$BMI / 100
-bodyfat$SEX <- as.factor(bodyfat$SEX)
-bodyfat$IPAQ <- as.factor(bodyfat$IPAQ)
-fits <- lapply(c(0.10, 0.25, 0.50, 0.75, 0.90), function(tau){
-    gamlss(ARMS ~ AGE + BMI + SEX + IPAQ, 
-           data = bodyfat, 
-           family = VASIQ(mu.link = "logit", sigma.link = "logit"), 
-           nu.start = tau)
+fittaus <- lapply(c(0.10, 0.25, 0.50, 0.75, 0.90), function(Tau)
+{
+ tau <<- Tau; 
+ gamlss(ARMS ~ AGE + BMI + SEX + IPAQ, data = bodyfat,
+ family = VASIQ(mu.link = "logit", sigma.link = "logit"))
 })
-sapply(fits, coef)
 
+sapply(fittaus, summary, USE.NAMES = TRUE)
 }
 \references{
-Mazucheli, J., Leiva, V., Alves, B., and Menezes A. F. B., (2021). A new quantile regression for modeling bounded data under a unit Birnbaum-Saunders distribution with applications in medicine and politics. \emph{Symmetry}, \bold{13}(682) 1--21.
+Mazucheli, J., Leiva, V., Alves, B., and Menezes A. F. B., (2021). A new quantile regression for modeling bounded data under a unit Birnbaum-Saunders distribution with applications in medicine and politics. \emph{Symmetry}, \bold{13}(4) 1--21.
 
 Petterle, R. R., Bonat, W. H., Scarpin, C. T., Jonasson, T., and Borba, V. Z. C., (2020). Multivariate quasi-beta regression models for continuous bounded data. \emph{The International Journal of Biostatistics}, 1--15, (preprint).
 }

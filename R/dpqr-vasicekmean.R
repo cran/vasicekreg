@@ -1,5 +1,6 @@
 #' @importFrom gamlss gamlss
 #' @importFrom gamlss.dist checklink
+#' @importFrom mvtnorm pmvnorm
 #' @importFrom stats dnorm qnorm runif
 #' @name VASIM
 #' @aliases VASIM dVASIM pVASIM qVASIM rVASIM
@@ -15,7 +16,7 @@
 #'  
 #' Hastie, T. J. and Tibshirani, R. J. (1990). \emph{Generalized Additive Models}. Chapman and Hall, London.
 #' 
-#' Mazucheli, J., Alves, B. and Korkmaz, M. Ç. (2021). The Vasicek quantile regression model. \emph{(under review)}.
+#' Mazucheli, J., Alves, B. and Korkmaz, M. C. (2021). The Vasicek quantile regression model. \emph{(under review)}.
 #' 
 #' Rigby, R. A. and  Stasinopoulos, D. M. (2005). Generalized additive models for location, scale and shape (with discussion). \emph{Applied. Statistics}, \bold{54}(3), 507--554.
 #' 
@@ -29,32 +30,38 @@
 #'
 #' Vasicek, O. A. (2002). The distribution of loan portfolio value. \emph{Risk}, \bold{15}(12), 1--10.
 #' 
-#' @param x,q vector of positive quantiles.
+#' @param x,q vector of quantiles on the (0,1) interval.
 #' @param p vector of probabilities.
 #' @param n number of observations. If \code{length(n) > 1}, the length is taken to be the number required.
 #' @param log,log.p logical; If TRUE, probabilities p are given as log(p).
 #' @param lower.tail logical; If TRUE, (default), \eqn{P(X \leq{x})} are returned, otherwise \eqn{P(X > x)}.
 #' @param mu.link the mu link function with default logit.
 #' @param sigma.link the sigma link function with default logit.
-#' @param mu vector of location parameter values, the mean.
+#' @param mu vector of the mean parameter values.
 #' @param sigma vector of shape parameter values.
 #'
-#' @return \code{VASIM()} return a gamlss.family object which can be used to fit a Vasicek distribution in the gamlss() function.
+#' @return \code{VASIM()} return a gamlss.family object which can be used to fit a Vasicek distribution by gamlss() function.
 #' 
 #' @note Note that for \code{VASIQ()}, mu is the \eqn{\tau}-th quantile and sigma a shape parameter. The \code{\link[gamlss]{gamlss}} function is used for parameters estimation.
 #' 
-#' @seealso \code{\link[vasicekreg]{VASIQ}}.
+#' @seealso \code{\link[vasicekreg]{VASIQ}}, \code{\link[mvtnorm]{pmvnorm}}.
 #'
 #' @details
 #' Probability density function 
-#' \deqn{f(y\mid \mu ,\sigma )=\sqrt{\frac{1-\sigma }{\sigma }}\exp \left\{ \frac{1}{2}\left[ \Phi ^{-1}\left( y\right) ^{2}-\left( \frac{\Phi ^{-1}\left(  y\right)    \sqrt{1-\sigma }-\Phi ^{-1}\left( \mu \right) }{\sqrt{\sigma }}\right) ^{2}\right] \right\}}
+#' \deqn{f(x\mid \mu ,\sigma )=\sqrt{\frac{1-\sigma }{\sigma }}\exp \left\{ \frac{1}{2}\left[ \Phi ^{-1}\left( x\right) ^{2}-\left( \frac{\Phi ^{-1}\left(  x\right)    \sqrt{1-\sigma }-\Phi ^{-1}\left( \mu \right) }{\sqrt{\sigma }}\right) ^{2}\right] \right\}}
 #' 
 #' Cumulative distribution function
-#' \deqn{F(y\mid \mu ,\sigma )=\Phi \left( \frac{\Phi ^{-1}\left( y\right) \sqrt{1-\sigma }-\Phi ^{-1}\left( \mu \right) }{\sqrt{\sigma }}\right)}
+#' \deqn{F(x\mid \mu ,\sigma )=\Phi \left( \frac{\Phi ^{-1}\left( x\right) \sqrt{1-\sigma }-\Phi ^{-1}\left( \mu \right) }{\sqrt{\sigma }}\right)}
 #' 
 #' Quantile function
 #' \deqn{Q(\tau \mid \mu ,\sigma )=F^{-1}(\tau \mid \mu ,\sigma )=\Phi \left(\frac{\Phi ^{-1}\left(\mu\right) +\Phi ^{-1}\left( \tau \right) \sqrt{\sigma }}{\sqrt{1-\sigma }}\right) }
-#' where \eqn{\mu = E(Y)}, \eqn{\sigma} is the shape parameter and  \eqn{0<\tau<1} is the \eqn{\tau}-th quantile.
+#' 
+#' Expected value
+#' \deqn{E(X) = \mu} 
+#' 
+#' Variance
+#' \deqn{Var(X) = \Phi_2\left ( \Phi^{-1}(\mu),\Phi^{-1}(\mu),\sigma \right )-\mu^2}
+#' where \eqn{0<(x, \mu, \tau, \sigma)<1} and \eqn{\Phi_2(\cdot)} is the probability distribution function for the standard bivariate normal distribution with correlation \eqn{\sigma}.
 
 #' @examples
 #'
@@ -187,7 +194,7 @@ VASIM <- function (mu.link = "logit", sigma.link = "logit")
                    t2 <- sqrt(0.1e1 - sigma);
                    t6 <- 0.1e1 / dnorm(t1)
                    t13 <- sigma * sigma;
-                   qnormx <- qnorm(y)
+                   qnormx <- qnorm(y);
                    return(-0.5000000000e0 * qnormx / t2 / sigma * t6 - 0.10e1 * (qnormx * t2 - t1) / t13 * t6);
                  },
                  G.dev.incr = function(y, mu, sigma, w, ...) -2 * dVASIM(y, mu, sigma, log = TRUE),
@@ -197,7 +204,11 @@ VASIM <- function (mu.link = "logit", sigma.link = "logit")
                  mu.valid = function(mu) all(mu > 0 & mu < 1),
                  sigma.valid = function(sigma) all(sigma > 0 & sigma < 1),
                  y.valid = function(y) all(y > 0 & y < 1),
-                 mean = function(mu, sigma) mu, variance = function(mu,sigma) sigma^2 * mu * (1 - mu)),class = c("gamlss.family","family"))
+                 mean = function(mu) mu, variance = function(mu,sigma) sapply(1:length(mu), function(i)  
+                   pmvnorm(lower=c(-Inf, -Inf), 
+                           upper= rep(qnorm(mu[i],2)), 
+                           mean = c(0, 0), 
+                           corr = matrix(c(1, sigma[i], sigma[i], 1), ncol = 2)) - mu[i] ^ 2)),class = c("gamlss.family","family"))
 }
 
 

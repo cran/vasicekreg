@@ -10,9 +10,9 @@
 #' 
 #' \code{\link[vasicekreg]{bodyfat}}: Body fat data set.
 #' 
-#' \code{\link[vasicekreg]{VASIM}}: Mean modeling.
+#' \code{\link[vasicekreg]{VASIM}}: For mean modeling (con/in)ditional on covariate(s).
 #' 
-#' \code{\link[vasicekreg]{VASIQ}}: Quantile modeling.
+#' \code{\link[vasicekreg]{VASIQ}}: For quantile modeling (con/in)ditional on covariate(s).
 #' 
 #' @author Josmar Mazucheli \email{jmazucheli@gmail.com}
 #' @author Bruna Alves \email{pg402900@uem.br}

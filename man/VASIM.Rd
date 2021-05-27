@@ -19,9 +19,9 @@ rVASIM(n, mu, sigma)
 VASIM(mu.link = "logit", sigma.link = "logit")
 }
 \arguments{
-\item{x, q}{vector of positive quantiles.}
+\item{x, q}{vector of quantiles on the (0,1) interval.}
 
-\item{mu}{vector of location parameter values, the mean.}
+\item{mu}{vector of the mean parameter values.}
 
 \item{sigma}{vector of shape parameter values.}
 
@@ -38,21 +38,27 @@ VASIM(mu.link = "logit", sigma.link = "logit")
 \item{sigma.link}{the sigma link function with default logit.}
 }
 \value{
-\code{VASIM()} return a gamlss.family object which can be used to fit a Vasicek distribution in the gamlss() function.
+\code{VASIM()} return a gamlss.family object which can be used to fit a Vasicek distribution by gamlss() function.
 }
 \description{
 The function \code{VASIM()} define the Vasicek distribution for a \code{gamlss.family} object to be used in GAMLSS fitting. \code{VASIM()} has mean equal to the parameter mu and sigma as shape parameter. The functions \code{dVASIM}, \code{pVASIM}, \code{qVASIM} and \code{rVASIM} define the density, distribution function, quantile function and random generation for Vasicek distribution.
 }
 \details{
 Probability density function
-\deqn{f(y\mid \mu ,\sigma )=\sqrt{\frac{1-\sigma }{\sigma }}\exp \left\{ \frac{1}{2}\left[ \Phi ^{-1}\left( y\right) ^{2}-\left( \frac{\Phi ^{-1}\left(  y\right)    \sqrt{1-\sigma }-\Phi ^{-1}\left( \mu \right) }{\sqrt{\sigma }}\right) ^{2}\right] \right\}}
+\deqn{f(x\mid \mu ,\sigma )=\sqrt{\frac{1-\sigma }{\sigma }}\exp \left\{ \frac{1}{2}\left[ \Phi ^{-1}\left( x\right) ^{2}-\left( \frac{\Phi ^{-1}\left(  x\right)    \sqrt{1-\sigma }-\Phi ^{-1}\left( \mu \right) }{\sqrt{\sigma }}\right) ^{2}\right] \right\}}
 
 Cumulative distribution function
-\deqn{F(y\mid \mu ,\sigma )=\Phi \left( \frac{\Phi ^{-1}\left( y\right) \sqrt{1-\sigma }-\Phi ^{-1}\left( \mu \right) }{\sqrt{\sigma }}\right)}
+\deqn{F(x\mid \mu ,\sigma )=\Phi \left( \frac{\Phi ^{-1}\left( x\right) \sqrt{1-\sigma }-\Phi ^{-1}\left( \mu \right) }{\sqrt{\sigma }}\right)}
 
 Quantile function
 \deqn{Q(\tau \mid \mu ,\sigma )=F^{-1}(\tau \mid \mu ,\sigma )=\Phi \left(\frac{\Phi ^{-1}\left(\mu\right) +\Phi ^{-1}\left( \tau \right) \sqrt{\sigma }}{\sqrt{1-\sigma }}\right) }
-where \eqn{\mu = E(Y)}, \eqn{\sigma} is the shape parameter and  \eqn{0<\tau<1} is the \eqn{\tau}-th quantile.
+
+Expected value
+\deqn{E(X) = \mu}
+
+Variance
+\deqn{Var(X) = \Phi_2\left ( \Phi^{-1}(\mu),\Phi^{-1}(\mu),\sigma \right )-\mu^2}
+where \eqn{0<(x, \mu, \tau, \sigma)<1} and \eqn{\Phi_2(\cdot)} is the probability distribution function for the standard bivariate normal distribution with correlation \eqn{\sigma}.
 }
 \note{
 Note that for \code{VASIQ()}, mu is the \eqn{\tau}-th quantile and sigma a shape parameter. The \code{\link[gamlss]{gamlss}} function is used for parameters estimation.
@@ -96,7 +102,7 @@ fit <- gamlss(y ~ x, data = data, family = VASIM, mu.link = 'logit', sigma.link 
 \references{
 Hastie, T. J. and Tibshirani, R. J. (1990). \emph{Generalized Additive Models}. Chapman and Hall, London.
 
-Mazucheli, J., Alves, B. and Korkmaz, M. Ç. (2021). The Vasicek quantile regression model. \emph{(under review)}.
+Mazucheli, J., Alves, B. and Korkmaz, M. C. (2021). The Vasicek quantile regression model. \emph{(under review)}.
 
 Rigby, R. A. and  Stasinopoulos, D. M. (2005). Generalized additive models for location, scale and shape (with discussion). \emph{Applied. Statistics}, \bold{54}(3), 507--554.
 
@@ -111,7 +117,7 @@ Vasicek, O. A. (1987). Probability of loss on loan portfolio. \emph{KMV Corporat
 Vasicek, O. A. (2002). The distribution of loan portfolio value. \emph{Risk}, \bold{15}(12), 1--10.
 }
 \seealso{
-\code{\link[vasicekreg]{VASIQ}}.
+\code{\link[vasicekreg]{VASIQ}}, \code{\link[mvtnorm]{pmvnorm}}.
 }
 \author{
 Josmar Mazucheli \email{jmazucheli@gmail.com}

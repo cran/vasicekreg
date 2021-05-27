@@ -8,24 +8,24 @@
 \alias{rVASIQ}
 \title{The Vasicek distribution - quantile parameterization}
 \usage{
-dVASIQ(x, mu, sigma, nu = 0.5, log = FALSE)
+dVASIQ(x, mu, sigma, tau = 0.5, log = FALSE)
 
-pVASIQ(q, mu, sigma, nu = 0.5, lower.tail = TRUE, log.p = FALSE)
+pVASIQ(q, mu, sigma, tau = 0.5, lower.tail = TRUE, log.p = FALSE)
 
-qVASIQ(p, mu, sigma, nu = 0.5, lower.tail = TRUE, log.p = FALSE)
+qVASIQ(p, mu, sigma, tau = 0.5, lower.tail = TRUE, log.p = FALSE)
 
-rVASIQ(n, mu, sigma, nu = 0.5)
+rVASIQ(n, mu, sigma, tau = 0.5)
 
-VASIQ(mu.link = "logit", sigma.link = "logit", nu.link = "identity")
+VASIQ(mu.link = "logit", sigma.link = "logit")
 }
 \arguments{
-\item{x, q}{vector of positive quantiles.}
+\item{x, q}{vector of quantiles on the (0,1) interval.}
 
-\item{mu}{vector of location parameter values.}
+\item{mu}{vector of the \eqn{\tau}-th quantile parameter values.}
 
 \item{sigma}{vector of shape parameter values.}
 
-\item{nu}{the \eqn{\tau}-th fixed quantile in [d-p-q-r]-VASIQ.}
+\item{tau}{the \eqn{\tau}-th fixed quantile in [d-p-q-r]-VASIQ function.}
 
 \item{log, log.p}{logical; If TRUE, probabilities p are given as log(p).}
 
@@ -38,23 +38,21 @@ VASIQ(mu.link = "logit", sigma.link = "logit", nu.link = "identity")
 \item{mu.link}{the mu link function with default logit.}
 
 \item{sigma.link}{the sigma link function with default logit.}
-
-\item{nu.link}{the \eqn{\tau}-th fixed quantile level in \code{VASIQ()} family.}
 }
 \value{
-\code{VASIQ()} return a gamlss.family object which can be used to fit a Vasicek distribution in the gamlss() function.
+\code{VASIQ()} return a gamlss.family object which can be used to fit a Vasicek distribution by gamlss() function.
 }
 \description{
-The function \code{VASIQ()} define the Vasicek distribution for a \code{gamlss.family} object to be used in GAMLSS fitting. \code{VASIQ()} has mean equal to the parameter mu and sigma as shape parameter. The functions \code{dVASIQ}, \code{pVASIQ}, \code{qVASIQ} and \code{rVASIQ} define the density, distribution function, quantile function and random generation for Vasicek distribution.
+The function \code{VASIQ()} define the Vasicek distribution for a \code{gamlss.family} object to be used in GAMLSS fitting. \code{VASIQ()} has the \eqn{\tau}-th quantile equal to the parameter mu and sigma as shape parameter. The functions \code{dVASIQ}, \code{pVASIQ}, \code{qVASIQ} and \code{rVASIQ} define the density, distribution function, quantile function and random generation for Vasicek distribution.
 }
 \details{
 Probability density function
-\deqn{f\left( {y\mid \mu ,\sigma ,\tau } \right) = \sqrt {{\textstyle{{1 - \sigma } \over \sigma }}} \exp \left\{ {\frac{1}{2}\left[ {\Phi ^{ - 1} \left( y \right)^2  - \left( {\frac{{\sqrt {1 - \sigma } \left[ {\Phi ^{ - 1} \left( y \right) - \Phi ^{ - 1} \left( \mu  \right)} \right] - \sqrt \sigma  \,\Phi ^{ - 1} \left( \tau  \right)}}{{\sqrt \sigma  }}} \right)^2 } \right]} \right\}}
+\deqn{f\left( {x\mid \mu ,\sigma ,\tau } \right) = \sqrt {{\textstyle{{1 - \sigma } \over \sigma }}} \exp \left\{ {\frac{1}{2}\left[ {\Phi ^{ - 1} \left( x \right)^2  - \left( {\frac{{\sqrt {1 - \sigma } \left[ {\Phi ^{ - 1} \left( x \right) - \Phi ^{ - 1} \left( \mu  \right)} \right] - \sqrt \sigma  \,\Phi ^{ - 1} \left( \tau  \right)}}{{\sqrt \sigma  }}} \right)^2 } \right]} \right\}}
 
 Cumulative distribution function
-\deqn{F\left({y\mid \mu ,\sigma ,\tau } \right) = \Phi \left[ {\frac{{\sqrt {1 - \sigma } \left[ {\Phi ^{ - 1} \left( y \right) - \Phi ^{ - 1} \left( \mu  \right)} \right] - \sqrt \sigma  \,\Phi ^{ - 1} \left( \tau  \right)}}{{\sqrt \sigma  }}} \right]}
+\deqn{F\left({x\mid \mu ,\sigma ,\tau } \right) = \Phi \left[ {\frac{{\sqrt {1 - \sigma } \left[ {\Phi ^{ - 1} \left( x \right) - \Phi ^{ - 1} \left( \mu  \right)} \right] - \sqrt \sigma  \,\Phi ^{ - 1} \left( \tau  \right)}}{{\sqrt \sigma  }}} \right]}
 
-where \eqn{\mu} is the \eqn{\tau}-th quantile and  \eqn{\sigma} is the shape parameter.
+where \eqn{0<(x, \mu, \tau, \sigma)<1}, \eqn{\mu} is the \eqn{\tau}-th quantile and  \eqn{\sigma} is the shape parameter.
 }
 \note{
 Note that for \code{VASIQ()}, mu is the \eqn{\tau}-th quantile and sigma a shape parameter. The \code{\link[gamlss]{gamlss}} function is used for parameters estimation.
@@ -62,27 +60,26 @@ Note that for \code{VASIQ()}, mu is the \eqn{\tau}-th quantile and sigma a shape
 \examples{
 
 set.seed(123)
-x <- rVASIQ(n = 1000, mu = 0.50, sigma = 0.69, nu = 0.50)
+x <- rVASIQ(n = 1000, mu = 0.50, sigma = 0.69, tau = 0.50)
 R <- range(x)
 S <- seq(from = R[1], to = R[2], length.out = 1000)
 
 hist(x, prob = TRUE, main = 'Vasicek')
-lines(S, dVASIQ(x = S, mu = 0.50, sigma = 0.69, nu = 0.50), col = 2)
+lines(S, dVASIQ(x = S, mu = 0.50, sigma = 0.69, tau = 0.50), col = 2)
 
 plot(ecdf(x))
-lines(S, pVASIQ(q = S, mu = 0.50, sigma = 0.69, nu = 0.50), col = 2)
+lines(S, pVASIQ(q = S, mu = 0.50, sigma = 0.69, tau = 0.50), col = 2)
 
 plot(quantile(x, probs = S), type = "l")
-lines(qVASIQ(p = S, mu = 0.50, sigma = 0.69, nu = 0.50), col = 2)
+lines(qVASIQ(p = S, mu = 0.50, sigma = 0.69, tau = 0.50), col = 2)
 
 library(gamlss)
 set.seed(123)
-data <- data.frame(y =  rVASIQ(n = 100, mu = 0.5, sigma = 0.69, nu = 0.5))
+data <- data.frame(y = rVASIQ(n = 100, mu = 0.50, sigma = 0.69, tau = 0.50))
 
-fit <- gamlss(y ~ 1, data = data, mu.link = 'logit', sigma.link = 'logit', 
-family = VASIQ, nu.start = 0.1)
-1 /(1 + exp(-fit$mu.coefficients))
-1 /(1 + exp(-fit$sigma.coefficients))
+tau <- 0.5
+fit <- gamlss(y ~ 1, data = data, family = VASIQ(mu.link = 'logit', sigma.link = 'logit'))
+1 /(1 + exp(-fit$mu.coefficients)); 1 /(1 + exp(-fit$sigma.coefficients))
 
 set.seed(123)
 n <- 100
@@ -90,17 +87,24 @@ x <- rbinom(n, size = 1, prob = 0.5)
 eta <- 0.5 + 1 * x;
 mu <- 1 / (1 + exp(-eta));
 sigma <- 0.5;
-y <- rVASIQ(n, mu, sigma, nu = 0.5)
-data <- data.frame(y, x)
+y <- rVASIQ(n, mu, sigma, tau = 0.5)
+data <- data.frame(y, x, tau = 0.5)
 
-VASIQ(mu.link = "logit", sigma.link = "identity")
-fit <- gamlss(y ~ x, data = data, family = VASIQ, mu.link = 'probit', 
-nu.start = 0.5, sigma.link = "log");
+tau <- 0.5;
+fit <- gamlss(y ~ x, data = data, family = VASIQ)
+
+fittaus <- lapply(c(0.10, 0.25, 0.50, 0.75, 0.90), function(Tau)
+{
+ tau <<- Tau; 
+ gamlss(y ~ x, data = data, family = VASIQ)
+})
+
+sapply(fittaus, summary)
 }
 \references{
 Hastie, T. J. and Tibshirani, R. J. (1990). \emph{Generalized Additive Models}. Chapman and Hall, London.
 
-Mazucheli, J., Alves, B. and Korkmaz, M. Ç. (2021). The Vasicek quantile regression model. \emph{(under review)}.
+Mazucheli, J., Alves, B. and Korkmaz, M. C. (2021). The Vasicek quantile regression model. \emph{(under review)}.
 
 Rigby, R. A. and  Stasinopoulos, D. M. (2005). Generalized additive models for location, scale and shape (with discussion). \emph{Applied. Statistics}, \bold{54}(3), 507--554.
 
