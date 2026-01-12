@@ -6,7 +6,7 @@
 \alias{pVASIM}
 \alias{qVASIM}
 \alias{rVASIM}
-\title{The Vasicek distribution - mean parameterization}
+\title{Vasicek distribution with mean parameterization}
 \usage{
 dVASIM(x, mu, sigma, log = FALSE)
 
@@ -19,105 +19,113 @@ rVASIM(n, mu, sigma)
 VASIM(mu.link = "logit", sigma.link = "logit")
 }
 \arguments{
-\item{x, q}{vector of quantiles on the (0,1) interval.}
+\item{x, q}{Vector of quantiles in the interval \eqn{(0,1)}.}
 
-\item{mu}{vector of the mean parameter values.}
+\item{mu}{Vector of mean values.}
 
-\item{sigma}{vector of shape parameter values.}
+\item{sigma}{Vector of shape parameter values.}
 
-\item{log, log.p}{logical; If TRUE, probabilities p are given as log(p).}
+\item{log, log.p}{Logical; if \code{TRUE}, probabilities are given on
+the log scale.}
 
-\item{lower.tail}{logical; If TRUE, (default), \eqn{P(X \leq{x})} are returned, otherwise \eqn{P(X > x)}.}
+\item{lower.tail}{Logical; if \code{TRUE}, probabilities
+\eqn{P(X \le x)} are returned.}
 
-\item{p}{vector of probabilities.}
+\item{p}{Vector of probabilities.}
 
-\item{n}{number of observations. If \code{length(n) > 1}, the length is taken to be the number required.}
+\item{n}{Number of observations.}
 
-\item{mu.link}{the mu link function with default logit.}
+\item{mu.link}{Link function for the \eqn{\mu} parameter.}
 
-\item{sigma.link}{the sigma link function with default logit.}
+\item{sigma.link}{Link function for the \eqn{\sigma} parameter.}
 }
 \value{
-\code{VASIM()} return a gamlss.family object which can be used to fit a Vasicek distribution by gamlss() function.
+\code{VASIM()} returns a \code{gamlss.family} object.
 }
 \description{
-The function \code{VASIM()} define the Vasicek distribution for a \code{gamlss.family} object to be used in GAMLSS fitting. \code{VASIM()} has mean equal to the parameter mu and sigma as shape parameter. The functions \code{dVASIM}, \code{pVASIM}, \code{qVASIM} and \code{rVASIM} define the density, distribution function, quantile function and random generation for Vasicek distribution.
+The function \code{VASIM()} defines the Vasicek distribution under
+a mean-based parameterization for use as a
+\code{gamlss.family} object in GAMLSS models. In this formulation,
+\eqn{\mu} represents the mean of the distribution and
+\eqn{\sigma} is a shape parameter. The functions \code{dVASIM},
+\code{pVASIM}, \code{qVASIM}, and \code{rVASIM} provide the density,
+distribution, quantile, and random generation functions,
+respectively.
 }
 \details{
-Probability density function
-\deqn{f(x\mid \mu ,\sigma )=\sqrt{\frac{1-\sigma }{\sigma }}\exp \left\{ \frac{1}{2}\left[ \Phi ^{-1}\left( x\right) ^{2}-\left( \frac{\Phi ^{-1}\left(  x\right)    \sqrt{1-\sigma }-\Phi ^{-1}\left( \mu \right) }{\sqrt{\sigma }}\right) ^{2}\right] \right\}}
+The probability density function is given by
+\deqn{f(x \mid \mu, \sigma) =
+\sqrt{\frac{1-\sigma}{\sigma}}
+\exp\left\{\frac{1}{2}\left[\Phi^{-1}(x)^2 -
+\left(\frac{\Phi^{-1}(x)\sqrt{1-\sigma}-\Phi^{-1}(\mu)}
+{\sqrt{\sigma}}\right)^2\right]\right\}.}
 
-Cumulative distribution function
-\deqn{F(x\mid \mu ,\sigma )=\Phi \left( \frac{\Phi ^{-1}\left( x\right) \sqrt{1-\sigma }-\Phi ^{-1}\left( \mu \right) }{\sqrt{\sigma }}\right)}
+The cumulative distribution function is
+\deqn{F(x \mid \mu, \sigma) =
+\Phi\left(\frac{\Phi^{-1}(x)\sqrt{1-\sigma}-\Phi^{-1}(\mu)}
+{\sqrt{\sigma}}\right).}
 
-Quantile function
-\deqn{Q(\tau \mid \mu ,\sigma )=F^{-1}(\tau \mid \mu ,\sigma )=\Phi \left(\frac{\Phi ^{-1}\left(\mu\right) +\Phi ^{-1}\left( \tau \right) \sqrt{\sigma }}{\sqrt{1-\sigma }}\right) }
-
-Expected value
-\deqn{E(X) = \mu}
-
-Variance
-\deqn{Var(X) = \Phi_2\left ( \Phi^{-1}(\mu),\Phi^{-1}(\mu),\sigma \right )-\mu^2}
-where \eqn{0<(x, \mu, \tau, \sigma)<1} and \eqn{\Phi_2(\cdot)} is the probability distribution function for the standard bivariate normal distribution with correlation \eqn{\sigma}.
+The quantile function is
+\deqn{Q(\tau \mid \mu, \sigma) =
+\Phi\left(\frac{\Phi^{-1}(\mu)+\Phi^{-1}(\tau)\sqrt{\sigma}}
+{\sqrt{1-\sigma}}\right).}
 }
 \note{
-Note that for \code{VASIQ()}, mu is the \eqn{\tau}-th quantile and sigma a shape parameter. The \code{\link[gamlss]{gamlss}} function is used for parameters estimation.
+In the \code{VASIM()} parameterization, \eqn{\mu} corresponds to the
+mean of the distribution and \eqn{\sigma} is a shape parameter.
 }
 \examples{
-
 set.seed(123)
-x <- rVASIM(n = 1000, mu = 0.50, sigma = 0.69)
-R <- range(x)
-S <- seq(from = R[1], to = R[2], length.out = 1000)
+x <- rVASIM(n = 1000, mu = 0.5, sigma = 0.69)
 
-hist(x, prob = TRUE, main = 'Vasicek')
-lines(S, dVASIM(x = S, mu = 0.50, sigma = 0.69), col = 2)
+hist(x, probability = TRUE, main = "Vasicek distribution")
 
-plot(ecdf(x))
-lines(S, pVASIM(q = S, mu = 0.50, sigma = 0.69), col = 2)
-
-plot(quantile(x, probs = S), type = "l")
-lines(qVASIM(p = S, mu = 0.50, sigma = 0.69), col = 2)
-
+\dontrun{
 library(gamlss)
-set.seed(123)
-data <- data.frame(y =  rVASIM(n = 100, mu = 0.5, sigma = 0.69))
-
-fit <- gamlss(y ~ 1, data = data, mu.link = 'logit', sigma.link = 'logit', family = VASIM)
-1 /(1 + exp(-fit$mu.coefficients))
-1 /(1 + exp(-fit$sigma.coefficients))
-
-set.seed(123)
-n <- 100
-x <- rbinom(n, size = 1, prob = 0.5)
-eta <- 0.5 + 1 * x;
-mu <- 1 / (1 + exp(-eta));
-sigma <- 0.1;
-y <- rVASIM(n, mu, sigma)
-data <- data.frame(y, x)
-
-fit <- gamlss(y ~ x, data = data, family = VASIM, mu.link = 'logit', sigma.link = 'logit');
-
+data <- data.frame(y = x[1:100])
+fit <- gamlss(y ~ 1, data = data,
+              family = VASIM(mu.link = "logit",
+                             sigma.link = "logit"))
+summary(fit)
+}
 }
 \references{
-Hastie, T. J. and Tibshirani, R. J. (1990). \emph{Generalized Additive Models}. Chapman and Hall, London.
+Hastie, T. J. and Tibshirani, R. J. (1990).
+\emph{Generalized Additive Models}. Chapman and Hall, London.
 
-Mazucheli, J., Alves, B. and Korkmaz, M. C. (2021). The Vasicek quantile regression model. \emph{(under review)}.
+Mazucheli, J., Alves, B., Korkmaz, M.Ç., and Leiva, V. (2022).
+Vasicek quantile and mean regression models for bounded data:
+New formulation, mathematical derivations, and numerical applications.
+\emph{Mathematics}, \bold{10}, 1389.
+\doi{10.3390/math10091389}
 
-Rigby, R. A. and  Stasinopoulos, D. M. (2005). Generalized additive models for location, scale and shape (with discussion). \emph{Applied. Statistics}, \bold{54}(3), 507--554.
+Rigby, R. A. and Stasinopoulos, D. M. (2005).
+Generalized additive models for location, scale and shape
+(with discussion). \emph{Applied Statistics}, \bold{54}(3), 507--554.
 
-Rigby, R. A., Stasinopoulos, D. M.,  Heller, G. Z. and De Bastiani, F. (2019). \emph{Distributions for modeling location, scale, and shape: Using GAMLSS in R}. Chapman and Hall/CRC.
+Rigby, R. A., Stasinopoulos, D. M., Heller, G. Z., and
+De Bastiani, F. (2019).
+\emph{Distributions for Modeling Location, Scale, and Shape:
+Using GAMLSS in R}. Chapman and Hall/CRC.
 
-Stasinopoulos, D. M. and Rigby, R. A. (2007) Generalized additive models for location scale and shape (GAMLSS) in R. \emph{Journal of Statistical Software}, \bold{23}(7), 1--45.
+Stasinopoulos, D. M. and Rigby, R. A. (2007).
+Generalized additive models for location, scale and shape (GAMLSS)
+in R. \emph{Journal of Statistical Software}, \bold{23}(7), 1--45.
 
-Stasinopoulos, D. M., Rigby, R. A., Heller, G., Voudouris, V. and De Bastiani F. (2017) \emph{Flexible Regression and Smoothing: Using GAMLSS in R}, Chapman and Hall/CRC.
+Stasinopoulos, D. M., Rigby, R. A., Heller, G., Voudouris, V.,
+and De Bastiani, F. (2017).
+\emph{Flexible Regression and Smoothing: Using GAMLSS in R}.
+Chapman and Hall/CRC.
 
-Vasicek, O. A. (1987). Probability of loss on loan portfolio. \emph{KMV Corporation}.
+Vasicek, O. A. (1987).
+Probability of loss on loan portfolio. \emph{KMV Corporation}.
 
-Vasicek, O. A. (2002). The distribution of loan portfolio value. \emph{Risk}, \bold{15}(12), 1--10.
+Vasicek, O. A. (2002).
+The distribution of loan portfolio value.
+\emph{Risk}, \bold{15}(12), 1--10.
 }
 \seealso{
-\code{\link[vasicekreg]{VASIQ}}, \code{\link[mvtnorm]{pmvnorm}}.
+\code{\link[vasicekreg]{VASIQ}}, \code{\link[mvtnorm]{pmvnorm}}
 }
 \author{
 Josmar Mazucheli \email{jmazucheli@gmail.com}

@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // cpp_dvasicekmean
 NumericVector cpp_dvasicekmean(const NumericVector x, const NumericVector alpha, const NumericVector theta, const bool logprob);
 RcppExport SEXP _vasicekreg_cpp_dvasicekmean(SEXP xSEXP, SEXP alphaSEXP, SEXP thetaSEXP, SEXP logprobSEXP) {

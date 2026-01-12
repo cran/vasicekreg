@@ -1,15 +1,19 @@
-## vasicekreg Update History
+# vasicekreg 1.0.2 (2026-01-12)
 
-2021-25-05 version 1.0.1
+## Improvements
+- Performance optimizations in `dpqr-vasicekmean.R` and `dpqr-vasicekquant.R`.
 
-* The VASIQ family was rewritten. I this version, the tau-th quantile must by a global variable.
+---
 
-2021-12-05 version 1.0.1
+# vasicekreg 1.0.1 (2021-12-05)
 
-* The term "variance = function(mu, sigma)" in VASIM family was corrected
+## Bug fixes
+- Corrected the term `variance = function(mu, sigma)` in the VASIM family.
+- Corrected the term `variance = function(mu, sigma)` in the VASIQ family.
 
-* The term "variance = function(mu, sigma)" in VASIQ family was corrected
+---
 
-2021-07-05 version 1.0.0
+# vasicekreg 1.0.0 (2021-07-05)
 
-* The package vasicekreg was uploaded to CRAN
+## Initial release
+- First release of the vasicekreg package on CRAN.

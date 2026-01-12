@@ -2,17 +2,25 @@
 % Please edit documentation in R/vasicekreg-package.R
 \docType{package}
 \name{vasicekreg-package}
+\alias{vasicekreg}
 \alias{vasicekreg-package}
 \title{Overview of the vasicekreg package}
 \description{
-The \pkg{vasicekreg} package implements the probability density function, quantile function, cumulative distribution function and random number generation function for Vasicek distribution parameterized, either, as a function of its mean or its \eqn{\tau}-th quantile, \eqn{0 <\tau<1}. In addition, two gamlss frameworks for regression analysis are available. Some function are written in \proglang{C++} using \pkg{Rcpp}.
+The \pkg{vasicekreg} package implements probability density, cumulative
+distribution, quantile, and random number generation functions for the
+Vasicek distribution parameterized either by its mean or by its
+\eqn{\tau}-th quantile, with \eqn{0 < \tau < 1}. In addition, two GAMLSS
+frameworks for regression analysis are provided. Some functions are
+written in \proglang{C++} using \pkg{Rcpp}.
 }
 \details{
-\code{\link[vasicekreg]{bodyfat}}: Body fat data set.
+\code{\link[vasicekreg]{bodyfat}}: Body fat dataset.
 
-\code{\link[vasicekreg]{VASIM}}: For mean modeling (con/in)ditional on covariate(s).
+\code{\link[vasicekreg]{VASIM}}: Mean modeling conditional or
+unconditional on covariates.
 
-\code{\link[vasicekreg]{VASIQ}}: For quantile modeling (con/in)ditional on covariate(s).
+\code{\link[vasicekreg]{VASIQ}}: Quantile modeling conditional or
+unconditional on covariates.
 }
 \author{
 Josmar Mazucheli \email{jmazucheli@gmail.com}
