@@ -6,21 +6,143 @@
 \alias{vasicekreg-package}
 \title{Overview of the vasicekreg package}
 \description{
-The \pkg{vasicekreg} package implements probability density, cumulative
-distribution, quantile, and random number generation functions for the
-Vasicek distribution parameterized either by its mean or by its
-\eqn{\tau}-th quantile, with \eqn{0 < \tau < 1}. In addition, two GAMLSS
-frameworks for regression analysis are provided. Some functions are
-written in \proglang{C++} using \pkg{Rcpp}.
+The \pkg{vasicekreg} package provides distribution functions and GAMLSS
+families for Vasicek-type distributions on the unit interval. Three base
+families are available:
+\itemize{
+  \item \code{NVASIM}: normal kernel with mean parameterization, where
+  \eqn{\mu=E(Y)}.
+  \item \code{NVASIQ}: normal kernel with quantile parameterization, where
+  \eqn{\mu=Q_Y(\tau)} for a fixed \eqn{\tau\in(0,1)}.
+  \item \code{LVASIQ}: logistic kernel with quantile parameterization, where
+  \eqn{\mu=Q_Y(\tau)} for a fixed \eqn{\tau\in(0,1)}.
+}
+For responses observed at the boundaries, the normal-kernel mean model is
+also available as:
+\itemize{
+  \item \code{ZANVASIM}: point mass at zero and a continuous component on
+  \eqn{(0,1)}.
+  \item \code{OANVASIM}: point mass at one and a continuous component on
+  \eqn{(0,1)}.
+  \item \code{ZOANVASIM}: point masses at zero and one and a continuous
+  component on \eqn{(0,1)}.
+}
+The parameter \eqn{\sigma\in(0,1)} controls dispersion in the continuous
+Vasicek component. The corresponding \code{d}, \code{p}, \code{q}, and
+\code{r} functions provide density or probability mass values, cumulative
+probabilities, quantiles, and random observations, respectively.
 }
 \details{
-\code{\link[vasicekreg]{bodyfat}}: Body fat dataset.
+\code{\link[vasicekreg]{bodyfat}}:
+Body fat dataset.
 
-\code{\link[vasicekreg]{VASIM}}: Mean modeling conditional or
-unconditional on covariates.
+\code{\link[vasicekreg]{NVASIM}}:
+Normal-kernel mean parameterization and GAMLSS family. In regression
+models, covariates describe the conditional mean through \eqn{\mu}.
 
-\code{\link[vasicekreg]{VASIQ}}: Quantile modeling conditional or
-unconditional on covariates.
+\code{\link[vasicekreg]{NVASIQ}}:
+Normal-kernel quantile parameterization and GAMLSS family. For a fixed
+quantile level \eqn{\tau}, covariates describe the conditional
+\eqn{\tau}-th quantile through \eqn{\mu}.
+
+\code{\link[vasicekreg]{LVASIQ}}:
+Logistic-kernel quantile parameterization and GAMLSS family. For a fixed
+quantile level \eqn{\tau}, covariates describe the conditional
+\eqn{\tau}-th quantile through \eqn{\mu}. A logistic-kernel mean-regression
+family is not provided because the mean has no closed-form expression and
+does not equal \eqn{\mu} under this parameterization.
+
+\code{\link[vasicekreg]{ZANVASIM}}:
+Zero-adjusted normal-kernel mean family. Here
+\eqn{\nu=P(Y=0)}, \eqn{\mu=E(Y\mid Y>0)}, and the marginal mean is
+\eqn{E(Y)=(1-\nu)\mu}.
+
+\code{\link[vasicekreg]{OANVASIM}}:
+One-adjusted normal-kernel mean family. Here
+\eqn{\nu=P(Y=1)}, \eqn{\mu=E(Y\mid Y<1)}, and the marginal mean is
+\eqn{E(Y)=\nu+(1-\nu)\mu}. The parameters \eqn{\mu} and \eqn{\nu}
+therefore have the same interpretations as their counterparts in the
+one-inflated beta family \code{\link[gamlss.dist]{BEOI}}. The shape
+parameter \eqn{\sigma} is distribution-specific and should not be
+compared directly between these families.
+
+\code{\link[vasicekreg]{ZOANVASIM}}:
+Zero-and-one-adjusted normal-kernel mean family. Here
+\eqn{\nu=P(Y=0)}, \eqn{\tau=P(Y=1\mid Y>0)}, and
+\eqn{\mu=E(Y\mid 0<Y<1)}. Consequently,
+\eqn{P(Y=1)=(1-\nu)\tau} and
+\eqn{E(Y)=(1-\nu)[\tau+(1-\tau)\mu]}.
+
+The distribution functions \code{dNVASIM}, \code{pNVASIM},
+\code{qNVASIM}, \code{dNVASIQ}, \code{pNVASIQ}, \code{qNVASIQ},
+\code{dLVASIQ}, \code{pLVASIQ}, and \code{qLVASIQ} call compiled
+\proglang{C++} routines through \pkg{Rcpp}. The boundary-adjusted
+distribution functions are implemented in \proglang{R} and reuse the
+compiled \code{NVASIM} functions for their continuous component.
+Parameter validation, the GAMLSS family definitions, and all
+log-likelihood derivatives are implemented in \proglang{R}. The mean and
+variance components of the \code{LVASIQ()} family object are obtained by
+numerical quadrature because these moments have no closed-form
+expressions.
+
+For the distribution functions associated with \code{NVASIQ} and
+\code{LVASIQ}, \code{tau} is supplied as an argument. For GAMLSS fitting,
+\code{NVASIQ()} and \code{LVASIQ()} require \code{tau} to be defined as a
+scalar variable in the global environment. The same value must be retained
+when residuals or other post-fit quantities are computed. This fixed
+quantile level is distinct from the parameter \code{tau} in
+\code{ZOANVASIM()}, which represents the conditional probability at one
+among nonzero observations.
+}
+\examples{
+\donttest{
+if (requireNamespace("betareg", quietly = TRUE)) {
+    data("ReadingSkills", package = "betareg")
+    ReadingSkills$dyslexia <- stats::relevel(
+        factor(ReadingSkills$dyslexia), ref = "no"
+    )
+
+    control <- gamlss::gamlss.control(n.cyc = 200, trace = FALSE)
+
+    ## In both models, mu = E(Y | Y < 1) and nu = P(Y = 1).
+    fit_oanvasim <- gamlss::gamlss(
+        accuracy1 ~ dyslexia * iq,
+        sigma.formula = ~ dyslexia + iq,
+        nu.formula = ~ 1,
+        family = OANVASIM(),
+        data = ReadingSkills,
+        control = control
+    )
+
+    fit_beoi <- gamlss::gamlss(
+        accuracy1 ~ dyslexia * iq,
+        sigma.formula = ~ dyslexia + iq,
+        nu.formula = ~ 1,
+        family = gamlss.dist::BEOI(),
+        data = ReadingSkills,
+        control = control
+    )
+
+    n <- nrow(ReadingSkills)
+    comparison <- data.frame(
+        family = c("OANVASIM", "BEOI"),
+        logLik = -c(
+            fit_oanvasim$G.deviance,
+            fit_beoi$G.deviance
+        ) / 2,
+        AIC = c(
+            gamlss::GAIC(fit_oanvasim, k = 2),
+            gamlss::GAIC(fit_beoi, k = 2)
+        ),
+        BIC = c(
+            gamlss::GAIC(fit_oanvasim, k = log(n)),
+            gamlss::GAIC(fit_beoi, k = log(n))
+        )
+    )
+    comparison
+}
+}
+
 }
 \author{
 Josmar Mazucheli \email{jmazucheli@gmail.com}

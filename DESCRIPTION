@@ -1,8 +1,8 @@
 Package: vasicekreg
 Type: Package
 Title: Regression Modeling Using Vasicek Distribution
-Version: 1.0.2
-Date: 2026-01-12
+Version: 1.1.0
+Date: 2026-08-09
 Authors@R: 
     c(person(given = "Josmar",
              family = "Mazucheli",
@@ -12,11 +12,17 @@ Authors@R:
              family = "Alves",
              role = "ctb",
              email = "pg402900@uem.br"))
-Description: Provides probability density, cumulative distribution,
-    quantile, and random number generation functions for the Vasicek
-    distribution. In addition, two functions are available for fitting
-    Generalized Additive Models for Location, Scale and Shape introduced
-    by Rigby and Stasinopoulos (2005,
+Description: Provides density, cumulative distribution, quantile, and
+    random generation functions for Vasicek distributions with standard
+    normal and standard logistic kernels. The normal-kernel distribution is
+    parameterized by either its mean or a fixed quantile, whereas the
+    logistic-kernel distribution uses a fixed-quantile parameterization.
+    Zero-adjusted, one-adjusted, and zero-and-one-adjusted extensions of the
+    normal-kernel mean parameterization are also provided for responses that
+    include boundary values. The corresponding 'NVASIM', 'NVASIQ', 'LVASIQ',
+    'ZANVASIM', 'OANVASIM', and 'ZOANVASIM' families are available for fitting
+    Generalized Additive Models for Location, Scale and Shape,
+    as introduced by Rigby and Stasinopoulos (2005,
     <doi:10.1111/j.1467-9876.2005.00510.x>). Some functions are written in
     'C++' using 'Rcpp', developed by Eddelbuettel and Francois (2011,
     <doi:10.18637/jss.v040.i08>).
@@ -27,12 +33,13 @@ LazyData: true
 Depends: R (>= 3.6)
 Imports: Rcpp, stats, gamlss, gamlss.dist, mvtnorm
 LinkingTo: Rcpp
-Suggests: testthat (>= 3.0.0)
-RoxygenNote: 7.3.3
+Suggests: betareg, testthat (>= 3.0.0)
 NeedsCompilation: yes
-Packaged: 2026-01-12 14:31:08 UTC; jmazucheli
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0
+Packaged: 2026-08-19 22:18:24 UTC; jmazucheli
 Author: Josmar Mazucheli [aut, cre],
   Bruna Alves [ctb]
 Maintainer: Josmar Mazucheli <jmazucheli@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-01-12 14:50:01 UTC
+Date/Publication: 2026-08-20 06:50:02 UTC
